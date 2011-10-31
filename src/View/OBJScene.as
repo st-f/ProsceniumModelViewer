@@ -20,7 +20,7 @@ package View
 	
 	public class OBJScene extends BasicDemo
 	{
-		protected static const SKYBOX_DIRECTORY:String				= "assets/skybox/";
+		protected static const SKYBOX_DIRECTORY:String				= "skybox/";
 		protected static const SKYBOX_FILENAMES:Vector.<String>		= new <String>[
 			SKYBOX_DIRECTORY + "px.png",
 			SKYBOX_DIRECTORY + "nx.png",
