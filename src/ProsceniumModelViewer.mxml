@@ -24,7 +24,7 @@
 			protected var fileFilter:FileFilter = new FileFilter("3D Models", "*.dae;*.obj;*.kml");
 			protected var statsComponent:UIComponent;
 			protected var stats:Stats;
-			protected var _objScene:OBJScene;
+			[Bindable] protected var _objScene:OBJScene;
 			
 			protected function addStats():void
 			{
@@ -41,14 +41,21 @@
 				_objScene.mouseParent = this.viewport;
 				_objScene.viewport = this.viewport;
 				_objScene.addEventListener( Event.COMPLETE, completeEventHandler );
-				_objScene.addEventListener( Event.ENTER_FRAME, enterFrameEventHandler );
+				//_objScene.addEventListener( Event.ENTER_FRAME, enterFrameEventHandler );
+				_objScene.addEventListener("modelLoadedEvent", handleModelLoadedEvent);
 				stage.addEventListener( Event.RESIZE, resizeEventHandler );
 				stage.addChildAt( _objScene, 0 );
 			}
 			
-			protected function enterFrameEventHandler( event:Event ):void
+			protected function handleModelLoadedEvent(event:Event):void
 			{
+				trace("MODEL LOADED!");
+				preloader.visible = preloader.includeInLayout = false;
 			}
+			
+			/* protected function enterFrameEventHandler( event:Event ):void
+			{
+			} */
 			
 			protected function resizeEventHandler( event:Event = undefined ):void
 			{
@@ -68,6 +75,7 @@
 			{
 				try 
 				{
+					preloader.visible = preloader.includeInLayout = true;
 					file = new File();
 					file.browseForOpen("Open", [fileFilter]);
 					file.addEventListener(Event.SELECT, handleSelectFile);
@@ -203,4 +211,7 @@
 		<!--<s:NumericStepper id="modelScaleNS" maximum="1000" minimum="5" stepSize="5" change="modelScaleNS_changeHandler(event)"/>-->
 	</s:VGroup>
 	<s:Group id="statsGroup" includeIn="Model" right="70" />
+	<s:BorderContainer id="preloader" visible="false" width="100%" height="100%" backgroundAlpha=".8" backgroundColor="0">
+		<s:Label color="#FFFFFF" text="{'Loading... '+_objScene.modelURL}" verticalCenter="-30" horizontalCenter="0" />
+	</s:BorderContainer>
 </s:WindowedApplication>

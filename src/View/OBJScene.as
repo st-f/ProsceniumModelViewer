@@ -276,6 +276,7 @@ package View
 			
 			//_camera.lookat(_camera.position, modelSceneNode.position, Vector3D.Y_AXIS);
 			//trace("NEW MODEL LOADED: "+scene);
+			this.dispatchEvent(new Event("modelLoadedEvent"));
 		}
 		
 		protected function keyDownHandler(event :KeyboardEvent):void
@@ -336,7 +337,7 @@ package View
 			}
 		}
 
-		public function get modelURL():String
+		[Bindable] public function get modelURL():String
 		{
 			return _modelURL;
 		}
