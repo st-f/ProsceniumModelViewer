@@ -20,7 +20,7 @@ package View
 	
 	public class OBJScene extends BasicDemo
 	{
-		protected static const SKYBOX_DIRECTORY:String				= "../assets/skybox/";
+		protected static const SKYBOX_DIRECTORY:String				= "assets/skybox/";
 		protected static const SKYBOX_FILENAMES:Vector.<String>		= new <String>[
 			SKYBOX_DIRECTORY + "px.png",
 			SKYBOX_DIRECTORY + "nx.png",
@@ -201,20 +201,39 @@ package View
 				{
 					case "obj":
 						_modelLoaderOBJ = new OBJLoader(_modelURL);
+						if(_modelLoaderOBJ.hasEventListener(ErrorEvent.ERROR)) return;
+						_modelLoaderOBJ.addEventListener(ErrorEvent.ERROR, handleModelLoaderError);
+						_modelLoaderOBJ.addEventListener(ProgressEvent.PROGRESS, handleModelLoaderProgress);
 						_modelLoaderOBJ.addEventListener(Event.COMPLETE, loadComplete);
 						break;
 					case "dae":
+						if(_modelLoaderDAE.hasEventListener(ErrorEvent.ERROR)) return;
 						_modelLoaderDAE = new ColladaLoader(_modelURL);
+						_modelLoaderDAE.addEventListener(ErrorEvent.ERROR, handleModelLoaderError);
+						_modelLoaderDAE.addEventListener(ProgressEvent.PROGRESS, handleModelLoaderProgress);
 						_modelLoaderDAE.addEventListener(Event.COMPLETE, loadComplete);
 						break;
 					case "kmz":
+						if(_modelLoaderKMZ.hasEventListener(ErrorEvent.ERROR)) return;
 						_modelLoaderKMZ = new KMZLoader(_modelURL);
+						_modelLoaderKMZ.addEventListener(ErrorEvent.ERROR, handleModelLoaderError);
+						_modelLoaderKMZ.addEventListener(ProgressEvent.PROGRESS, handleModelLoaderProgress);
 						_modelLoaderKMZ.addEventListener(Event.COMPLETE, loadComplete);
 						break;
 					default:
 						trace("ERROR: TYPE NOT RECOGNIZED");
 				}
 			}
+		}
+		
+		protected function handleModelLoaderProgress(event:ProgressEvent):void
+		{
+			trace("handleModelLoaderProgress: "+event.bytesLoaded+" / "+event.bytesTotal);
+			this.dispatchEvent(new ProgressEvent("modelLoadProgress",false,false,event.bytesLoaded, event.bytesTotal));
+		}
+		
+		protected function handleModelLoaderError(event:ErrorEvent):void
+		{
 		}
 		
 		protected var modelSceneNode:SceneNode;

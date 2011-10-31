@@ -14,6 +14,7 @@
 		<![CDATA[
 			import View.OBJScene;
 			
+			import mx.controls.Alert;
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
 			import mx.events.NumericStepperEvent;
@@ -43,8 +44,14 @@
 				_objScene.addEventListener( Event.COMPLETE, completeEventHandler );
 				//_objScene.addEventListener( Event.ENTER_FRAME, enterFrameEventHandler );
 				_objScene.addEventListener("modelLoadedEvent", handleModelLoadedEvent);
+				_objScene.addEventListener("modelLoadProgress", handleModelLoadProgressEvent);
 				stage.addEventListener( Event.RESIZE, resizeEventHandler );
 				stage.addChildAt( _objScene, 0 );
+			}
+			
+			protected function handleModelLoadProgressEvent(event:ProgressEvent):void
+			{
+				trace("model: "+event.bytesLoaded+" / "+event.bytesTotal)
 			}
 			
 			protected function handleModelLoadedEvent(event:Event):void
@@ -82,7 +89,7 @@
 				}
 				catch (error:Error)
 				{
-					trace("Failed:", error.message);
+					Alert.show("Failed:", error.message);
 				}
 			}
 			
