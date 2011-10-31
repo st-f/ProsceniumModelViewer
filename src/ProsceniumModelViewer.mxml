@@ -85,12 +85,18 @@
 					preloader.visible = preloader.includeInLayout = true;
 					file = new File();
 					file.browseForOpen("Open", [fileFilter]);
+					file.addEventListener(Event.CANCEL, handleCancelSelectFile);
 					file.addEventListener(Event.SELECT, handleSelectFile);
 				}
 				catch (error:Error)
 				{
 					Alert.show("Failed:", error.message);
 				}
+			}
+			
+			protected function handleCancelSelectFile(event:Event):void
+			{
+				preloader.visible = preloader.includeInLayout = false;
 			}
 			
 			protected function handleSelectFile(event:Event):void
