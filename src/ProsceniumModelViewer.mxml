@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" 
+					   xmlns:Control="Control.*" 
+					   xmlns:hires="net.hires.*" minHeight="400" minWidth="700"
+					   frameRate="120" backgroundColor="0x333333"
+					   skinClass="TransparentApplicationSkin">
+	<s:states>
+		<s:State name="Home"/>
+		<s:State name="Model"/>
+	</s:states>
+	<fx:Script>
+		<![CDATA[
+			import View.OBJScene;
+			
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.NumericStepperEvent;
+			
+			import net.hires.Stats;
+			
+			protected var file:File;
+			protected var fileFilter:FileFilter = new FileFilter("3D Models", "*.dae;*.obj;*.kml");
+			protected var statsComponent:UIComponent;
+			protected var stats:Stats;
+			protected var _objScene:OBJScene;
+			
+			protected function addStats():void
+			{
+				statsComponent = new UIComponent();
+				stats = new Stats();
+				statsComponent.addChild(stats);
+				statsGroup.addElement(statsComponent);
+			}
+			
+			protected function add3DScene():void
+			{
+				_objScene = new OBJScene();
+				_objScene.modelURL = file.url;
+				_objScene.mouseParent = this.viewport;
+				_objScene.viewport = this.viewport;
+				_objScene.addEventListener( Event.COMPLETE, completeEventHandler );
+				_objScene.addEventListener( Event.ENTER_FRAME, enterFrameEventHandler );
+				stage.addEventListener( Event.RESIZE, resizeEventHandler );
+				stage.addChildAt( _objScene, 0 );
+			}
+			
+			protected function enterFrameEventHandler( event:Event ):void
+			{
+			}
+			
+			protected function resizeEventHandler( event:Event = undefined ):void
+			{
+				if ( _objScene && stage )
+				{
+					_objScene.resize( stage.stageWidth, stage.stageHeight ); 
+					trace("resize")
+				}
+			}
+			
+			protected function completeEventHandler(event:Event):void
+			{
+				trace("objScene loaded.");
+			}
+			
+			protected function chooseFileclickHandler(event:MouseEvent):void
+			{
+				try 
+				{
+					file = new File();
+					file.browseForOpen("Open", [fileFilter]);
+					file.addEventListener(Event.SELECT, handleSelectFile);
+				}
+				catch (error:Error)
+				{
+					trace("Failed:", error.message);
+				}
+			}
+			
+			protected function handleSelectFile(event:Event):void
+			{
+				this.currentState = "Model";
+				if(!stats)
+				{
+					add3DScene();
+					addStats();
+				}
+				else
+				{
+					_objScene.modelURL = file.url;
+					_objScene.setupModel();
+				}
+			}
+			
+			protected function rotateXButton_clickHandler(event:MouseEvent):void
+			{
+				_objScene.rotateX = event.target.selected;
+			}
+			
+			protected function rotateYButton_clickHandler(event:MouseEvent):void
+			{
+				_objScene.rotateY = event.target.selected;
+			}
+			
+			protected function rotateZButton_clickHandler(event:MouseEvent):void
+			{
+				_objScene.rotateZ = event.target.selected;
+			}
+			
+			protected function yawButton_clickHandler(event:MouseEvent):void
+			{
+				_objScene.yaw = event.target.selected;				
+			}
+			
+			protected function pitchButton_clickHandler(event:MouseEvent):void
+			{
+				_objScene.pitch = event.target.selected;		
+			}
+			
+			protected function rollButton_clickHandler(event:MouseEvent):void
+			{
+				_objScene.roll = event.target.selected;		
+			}
+			
+			protected function modelScaleNS_changeHandler(event:Event):void
+			{
+				_objScene.modelScale = event.target.value / 100;
+			}
+			
+			
+			protected function resetButton_clickHandler(event:MouseEvent):void
+			{
+				stopYawPitchRoll();
+				_objScene.resetModel();
+			}
+			
+			protected function stopYawPitchRoll():void
+			{
+				yawButton.selected = _objScene.yaw = false;
+				rollButton.selected = _objScene.roll = false;
+				pitchButton.selected = _objScene.pitch = false;
+			}
+			
+			protected function rotationZSlider_changeEndHandler(event:FlexEvent):void
+			{
+				stopYawPitchRoll();
+			}
+			
+			protected function rotationYSlider_changeEndHandler(event:FlexEvent):void
+			{
+				stopYawPitchRoll();
+			}
+			
+			protected function rotationXSlider_changeEndHandler(event:FlexEvent):void
+			{
+				stopYawPitchRoll();
+				_objScene.rotate("X", event.target.value);
+			}
+			
+			protected function rotationSpeedSlider_changeEndHandler(event:FlexEvent):void
+			{
+				_objScene.rotationSpeed = event.target.value;
+			}
+			
+			protected function cameraLookAtEnabled_clickHandler(event:MouseEvent):void
+			{
+				_objScene.cameraLookAtEnabled = event.target.selected;
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Group id="viewport" x="0" y="0" width="100%" height="100%" resize="resizeEventHandler( event )">
+		<s:VGroup includeIn="Model" bottom="0" width="100%" paddingBottom="10" paddingLeft="10"
+				  paddingRight="10" paddingTop="10" color="0xFFFFFF">
+			<s:Label text="Use your mouse to navigate. While dragging, holding SHIFT changes the camera Y position and ALT the camera Z position."/>
+			<!--<s:Label includeIn="Model" text="rotation X"/>
+			<s:HSlider id="rotationXSlider" width="100%" maximum="360" changeStart="rotationXSlider_changeEndHandler(event)"/>
+			<s:Label includeIn="Model" text="rotation Y"/>
+			<s:HSlider id="rotationYSlider" width="100%" maximum="360" stepSize="1" changeEnd="rotationYSlider_changeEndHandler(event)"/>
+			<s:Label includeIn="Model" text="rotation Z"/>
+			<s:HSlider id="rotationZSlider" width="100%" maximum="360" value="0" changeEnd="rotationZSlider_changeEndHandler(event)"/>-->
+		</s:VGroup>
+	</s:Group>
+	<s:VGroup x="0" y="0" width="100%" height="100%" width.Model="210" height.Model="36" gap="30"
+			  horizontalAlign="center" verticalAlign="middle">
+		<s:Button label="choose a DAE, OBJ or KMZ file"
+				  click="chooseFileclickHandler(event)"/>
+	</s:VGroup>
+	<s:VGroup includeIn="Model" y="36" paddingBottom="10" paddingLeft="10" paddingRight="10">
+		<s:ToggleButton id="yawButton" label="yaw" click="yawButton_clickHandler(event)"/>
+		<s:ToggleButton id="pitchButton" label="pitch" click="pitchButton_clickHandler(event)" />
+		<s:ToggleButton id="rollButton" label="roll" click="rollButton_clickHandler(event)" />
+		<s:ToggleButton id="rotateXButton" click="rotateXButton_clickHandler(event)" label="X rotate" />
+		<s:ToggleButton id="rotateYButton" click="rotateYButton_clickHandler(event)" label="Y rotate" />
+		<s:ToggleButton id="rotateZButton" click="rotateZButton_clickHandler(event)" label="Z rotate" />
+		<s:Button id="resetButton" label="reset" click="resetButton_clickHandler(event)"/>
+		<s:Label width="100%" color="#FFFFFF" text="Rotation speed"/>
+		<s:HSlider id="rotationSpeedSlider" width="70"
+				   changeEnd="rotationSpeedSlider_changeEndHandler(event)" maximum="20"
+				   minimum="-20"/>
+		<s:CheckBox id="cameraLookAtEnabled" label="Camera looks at model" color="#FFFFFF" selected="true" click="cameraLookAtEnabled_clickHandler(event)" />
+		<!--<s:NumericStepper id="modelScaleNS" maximum="1000" minimum="5" stepSize="5" change="modelScaleNS_changeHandler(event)"/>-->
+	</s:VGroup>
+	<s:Group id="statsGroup" includeIn="Model" right="70" />
+</s:WindowedApplication>
