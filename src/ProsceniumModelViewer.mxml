@@ -22,7 +22,7 @@
 			import net.hires.Stats;
 			
 			protected var file:File;
-			protected var fileFilter:FileFilter = new FileFilter("3D Models", "*.dae;*.obj;*.kml");
+			protected var fileFilter:FileFilter = new FileFilter("3D Models", "*.dae;*.obj;*.kmz");
 			protected var statsComponent:UIComponent;
 			protected var stats:Stats;
 			[Bindable] protected var _objScene:OBJScene;

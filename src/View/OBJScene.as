@@ -207,6 +207,7 @@ package View
 						_modelLoaderOBJ.addEventListener(Event.COMPLETE, loadComplete);
 						break;
 					case "dae":
+						_modelLoaderDAE = new ColladaLoader(_modelURL);
 						if(_modelLoaderDAE.hasEventListener(ErrorEvent.ERROR)) return;
 						_modelLoaderDAE = new ColladaLoader(_modelURL);
 						_modelLoaderDAE.addEventListener(ErrorEvent.ERROR, handleModelLoaderError);
@@ -214,6 +215,7 @@ package View
 						_modelLoaderDAE.addEventListener(Event.COMPLETE, loadComplete);
 						break;
 					case "kmz":
+						_modelLoaderKMZ = new KMZLoader(_modelURL);
 						if(_modelLoaderKMZ.hasEventListener(ErrorEvent.ERROR)) return;
 						_modelLoaderKMZ = new KMZLoader(_modelURL);
 						_modelLoaderKMZ.addEventListener(ErrorEvent.ERROR, handleModelLoaderError);
